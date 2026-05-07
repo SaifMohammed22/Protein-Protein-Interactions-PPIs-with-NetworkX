@@ -88,6 +88,14 @@ def generate_mock_graph() -> nx.DiGraph:
     # Add all edges with their weight attribute in one call
     graph.add_weighted_edges_from(edges)
 
+    # ── Compute 'distance' = -log(weight) for each edge ──────────────
+    # The pathfinding algorithm (Dijkstra) minimises sum-of-distances,
+    # which is mathematically equivalent to maximising the product of
+    # raw probabilities.  See find_all_shortest_paths() for full
+    # explanation of the negative-log transform.
+    for u, v, data in graph.edges(data=True):
+        data["distance"] = -math.log(data["weight"])
+
     return graph
 
 
@@ -171,7 +179,7 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
     print("\n--- TEST 4: Single-edge graph ---")
     G_tiny = nx.DiGraph()
-    G_tiny.add_edge("A", "B", weight=0.42)
+    G_tiny.add_edge("A", "B", weight=0.42, distance=-math.log(0.42))
     res = find_all_shortest_paths(G_tiny, "A", "B")
     report("Single-edge path found", len(res) == 1)
     report("Score equals edge weight",
@@ -195,8 +203,8 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
     print("\n--- TEST 6: Disconnected components ---")
     G_disc = nx.DiGraph()
-    G_disc.add_edge("X1", "X2", weight=0.5)
-    G_disc.add_edge("Y1", "Y2", weight=0.8)
+    G_disc.add_edge("X1", "X2", weight=0.5, distance=-math.log(0.5))
+    G_disc.add_edge("Y1", "Y2", weight=0.8, distance=-math.log(0.8))
     try:
         find_all_shortest_paths(G_disc, "X1", "Y2")
         report("NetworkXNoPath for disconnected", False)
@@ -208,8 +216,8 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
     print("\n--- TEST 7: Boundary edge weights ---")
     G_bnd = nx.DiGraph()
-    G_bnd.add_edge("S", "M", weight=0.01)   # minimum allowed weight
-    G_bnd.add_edge("M", "T", weight=1.0)    # maximum allowed weight
+    G_bnd.add_edge("S", "M", weight=0.01, distance=-math.log(0.01))   # minimum allowed weight
+    G_bnd.add_edge("M", "T", weight=1.0, distance=-math.log(1.0))    # maximum allowed weight
     res = find_all_shortest_paths(G_bnd, "S", "T")
     report("Boundary weights: path found", len(res) == 1)
     report("Boundary score correct",
@@ -220,12 +228,12 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
     print("\n--- TEST 8: Multiple equal-cost shortest paths ---")
     G_eq = nx.DiGraph()
-    #  S --0.5--> A --0.5--> T   total weight = 1.0
-    #  S --0.5--> B --0.5--> T   total weight = 1.0
-    G_eq.add_edge("S", "A", weight=0.5)
-    G_eq.add_edge("A", "T", weight=0.5)
-    G_eq.add_edge("S", "B", weight=0.5)
-    G_eq.add_edge("B", "T", weight=0.5)
+    #  S --0.5--> A --0.5--> T   total distance = -log(0.5)*2
+    #  S --0.5--> B --0.5--> T   total distance = -log(0.5)*2  (equal)
+    G_eq.add_edge("S", "A", weight=0.5, distance=-math.log(0.5))
+    G_eq.add_edge("A", "T", weight=0.5, distance=-math.log(0.5))
+    G_eq.add_edge("S", "B", weight=0.5, distance=-math.log(0.5))
+    G_eq.add_edge("B", "T", weight=0.5, distance=-math.log(0.5))
     res = find_all_shortest_paths(G_eq, "S", "T")
     report("Two equal-cost paths found", len(res) == 2,
            f"got {len(res)}")
@@ -240,7 +248,9 @@ if __name__ == "__main__":
     G_chain = nx.DiGraph()
     chain_weight = 0.9
     for i in range(10):
-        G_chain.add_edge(f"N{i}", f"N{i+1}", weight=chain_weight)
+        G_chain.add_edge(f"N{i}", f"N{i+1}",
+                         weight=chain_weight,
+                         distance=-math.log(chain_weight))
     res = find_all_shortest_paths(G_chain, "N0", "N10")
     expected_score = chain_weight ** 10
     report("10-hop path found", len(res) == 1)
@@ -267,7 +277,7 @@ if __name__ == "__main__":
         v = random.choice(nodes)
         if u != v and not G_big.has_edge(u, v):
             w = round(random.uniform(0.01, 1.0), 4)
-            G_big.add_edge(u, v, weight=w)
+            G_big.add_edge(u, v, weight=w, distance=-math.log(w))
             edges_added += 1
 
     print(f"  Graph: {G_big.number_of_nodes()} nodes, {G_big.number_of_edges()} edges")
@@ -341,7 +351,7 @@ if __name__ == "__main__":
     print(f"  Nodes ({G_dbg.number_of_nodes()}): {sorted(G_dbg.nodes)}")
     print(f"  Edges ({G_dbg.number_of_edges()}):")
     for u, v, d in G_dbg.edges(data=True):
-        print(f"    {u} -> {v}  weight={d['weight']}")
+        print(f"    {u} -> {v}  weight={d['weight']}  distance={d['distance']:.4f}")
     print(f"  Connected (undirected): {nx.is_connected(G_dbg.to_undirected())}")
     all_paths = list(nx.all_simple_paths(G_dbg, "P10001", "P10006"))
     print(f"  All simple paths P10001->P10006: {len(all_paths)}")

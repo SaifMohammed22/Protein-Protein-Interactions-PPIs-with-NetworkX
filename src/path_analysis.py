@@ -55,13 +55,14 @@ def find_all_shortest_paths(
     # ── Find all shortest paths using Dijkstra's algorithm ───────────
     # networkx.all_shortest_paths returns a generator of node-lists.
     # The `weight` parameter tells Dijkstra which edge attribute to minimise.
+    # We minimise 'distance' (= -log(probability))
     # If no path exists, NetworkXNoPath is raised.
     try:
         shortest_paths_gen = nx.all_shortest_paths(
             graph,
             source=source,
             target=target,
-            weight="weight",          # Minimise the sum of edge weights
+            weight="distance",        # Minimise sum of -log(prob)
         )
         # Materialise the generator into a list so we can iterate twice
         shortest_paths = list(shortest_paths_gen)
