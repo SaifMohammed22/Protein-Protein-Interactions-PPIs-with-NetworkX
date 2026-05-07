@@ -1,0 +1,7 @@
+Protein	Degree
+========================================
+ProteinA	2
+ProteinB	3
+ProteinC	3
+ProteinD	3
+ProteinE	1
