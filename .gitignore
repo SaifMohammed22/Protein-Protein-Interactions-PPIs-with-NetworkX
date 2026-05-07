@@ -225,3 +225,6 @@ results/*
 images/*
 !results/.gitkeep
 !images/.gitkeep
+
+# Ignore the results of tests
+__test_tmp__/
