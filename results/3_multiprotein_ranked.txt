@@ -1,0 +1,7 @@
+Rank	Protein	Degree
+==================================================
+1	ProteinB	3
+2	ProteinC	3
+3	ProteinD	3
+4	ProteinA	2
+5	ProteinE	1
