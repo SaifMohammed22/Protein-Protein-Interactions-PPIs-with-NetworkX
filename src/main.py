@@ -8,7 +8,7 @@ if current_dir not in sys.path:
     sys.path.append(current_dir)
 
 from graph_builder import parse_data, build_graph, export_adjacency_matrix
-from connectivity_analysis import run_connectivity_analysis, print_degree_statistics
+from connectivity_analysis import run_connectivity_analysis, print_degree_statistics, get_protein_neighbors
 from id_converter import get_gene_names
 
 # --- Phase 5: Test Variables ---
@@ -31,8 +31,8 @@ def main():
     # 2. Phase 1: Foundation & Data Parsing
     print("\n--- Phase 1: Building Graph ---")
     # Subsampling for performance during testing (optional)
-    tails, heads, weights, _ = parse_data(str(data_path), max_edges=10000)
-    graph = build_graph(tails, heads, weights)
+    tails, heads, weights, distances, edge_types = parse_data(str(data_path), max_edges=10000)
+    graph = build_graph(tails, heads, weights, distances)
     
     # Export adjacency matrix
     adj_matrix_path = results_dir / "4_adjacency_matrix.csv"
@@ -44,6 +44,19 @@ def main():
     print("\n--- Phase 2: Connectivity Analysis ---")
     run_connectivity_analysis(graph, str(results_dir))
     print_degree_statistics(graph)
+
+    # 3.5. Phase 2.5: Protein Neighbors Analysis
+    print("\n--- Phase 2.5: Protein Neighbors Analysis ---")
+    try:
+        neighbors_output = results_dir / "0_protein_neighbors.txt"
+        neighbor_data = get_protein_neighbors(graph, PROTEIN_A, str(neighbors_output))
+        print(f"Protein {PROTEIN_A}:")
+        print(f"  Total degree: {neighbor_data['total_degree']}")
+        print(f"  In-degree: {neighbor_data['in_degree']}")
+        print(f"  Out-degree: {neighbor_data['out_degree']}")
+        print(f"✓ Neighbors saved to {neighbors_output}")
+    except Exception as e:
+        print(f"[Warning] Neighbors analysis skipped -- {e}")
 
     # 4. Phase 3: Pathfinding (Member 3 - Placeholder)
     print("\n--- Phase 3: Pathfinding ---")

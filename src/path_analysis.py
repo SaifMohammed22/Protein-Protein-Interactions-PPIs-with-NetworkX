@@ -15,11 +15,13 @@ def find_all_shortest_paths(
 ) -> list[dict]:
     """Find every shortest simple path between two proteins and score them.
 
-    We use `networkx.all_shortest_paths` with `weight="weight"`
+    We use `networkx.all_shortest_paths` with `weight="distance"`
     rather than `all_simple_paths` because we specifically want the
-    shortest (minimum-weight) set, not the exhaustive set of all
-    possible acyclic walks. Internally NetworkX delegates to Dijkstra's
-    algorithm, which is well-suited for non-negative edge weights.
+    shortest (minimum-distance) set, not the exhaustive set of all
+    possible acyclic walks. We minimize distance = -log(probability),
+    which maximizes the product of edge weights. Internally NetworkX
+    delegates to Dijkstra's algorithm, which is well-suited for
+    non-negative edge weights.
 
     Each edge weight is a probability (confidence that the interaction
     truly exists). For a complete signalling cascade (path) to occur,

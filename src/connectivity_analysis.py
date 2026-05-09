@@ -192,3 +192,78 @@ def print_degree_statistics(graph: nx.Graph) -> None:
     print(f"Min degree:                    {stats['min_degree']}")
     print(f"Max degree:                    {stats['max_degree']}")
     print("=" * 50 + "\n")
+
+
+def get_protein_neighbors(graph: nx.DiGraph, protein_id: str, output_path: str) -> dict:
+    """
+    Get all directly connected proteins (neighbors) of a given protein.
+    
+    Returns both incoming and outgoing neighbors with their interaction weights.
+    For a directed graph, this includes:
+    - Predecessors: proteins that interact WITH this protein (incoming edges)
+    - Successors: proteins that this protein interacts WITH (outgoing edges)
+    
+    Args:
+        graph: NetworkX directed graph object
+        protein_id: UniProt ID of the query protein
+        output_path: Path where results will be saved (e.g., "results/0_protein_neighbors.txt")
+        
+    Returns:
+        Dictionary with 'degree', 'predecessors', and 'successors' info
+        
+    Raises:
+        nx.NodeNotFound: If protein_id not in graph
+    """
+    if protein_id not in graph:
+        raise nx.NodeNotFound(f"Protein '{protein_id}' not found in graph.")
+    
+    # Get incoming and outgoing neighbors
+    predecessors = dict(graph.pred[protein_id])  # Proteins pointing TO this one
+    successors = dict(graph.succ[protein_id])    # Proteins this one points TO
+    
+    # Calculate total degree
+    total_degree = len(predecessors) + len(successors)
+    in_degree = len(predecessors)
+    out_degree = len(successors)
+    
+    # Create output directory if needed
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    
+    # Write to file
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write("=" * 60 + "\n")
+        f.write("PROTEIN NEIGHBORS ANALYSIS\n")
+        f.write(f"Query Protein: {protein_id}\n")
+        f.write(f"Total Degree: {total_degree}\n")
+        f.write(f"  - In-Degree (incoming interactions): {in_degree}\n")
+        f.write(f"  - Out-Degree (outgoing interactions): {out_degree}\n")
+        f.write("=" * 60 + "\n\n")
+        
+        # Write incoming neighbors (predecessors)
+        if predecessors:
+            f.write("--- INCOMING INTERACTIONS (Predecessors) ---\n")
+            f.write("Protein ID\t\tInteraction Weight\n")
+            f.write("-" * 40 + "\n")
+            for neighbor_id, edge_data in sorted(predecessors.items()):
+                weight = edge_data.get('weight', 'N/A')
+                f.write(f"{neighbor_id}\t\t{weight}\n")
+            f.write("\n")
+        
+        # Write outgoing neighbors (successors)
+        if successors:
+            f.write("--- OUTGOING INTERACTIONS (Successors) ---\n")
+            f.write("Protein ID\t\tInteraction Weight\n")
+            f.write("-" * 40 + "\n")
+            for neighbor_id, edge_data in sorted(successors.items()):
+                weight = edge_data.get('weight', 'N/A')
+                f.write(f"{neighbor_id}\t\t{weight}\n")
+            f.write("\n")
+    
+    return {
+        'protein_id': protein_id,
+        'total_degree': total_degree,
+        'in_degree': in_degree,
+        'out_degree': out_degree,
+        'predecessors': predecessors,
+        'successors': successors
+    }
