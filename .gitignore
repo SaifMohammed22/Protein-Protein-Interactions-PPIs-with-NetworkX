@@ -219,12 +219,9 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Ignore results until project is done
-deliverables/results/
+# Ignore results
 results/*
-images/*
 !results/.gitkeep
-!images/.gitkeep
 
 # Ignore the results of tests
 __test_tmp__/
