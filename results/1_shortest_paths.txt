@@ -1,0 +1,12 @@
+=======================================================
+SHORTEST PATH ANALYSIS
+Source Protein : P15056
+Target Protein : P08069
+Number of shortest paths found : 1
+=======================================================
+
+--- Path 1 (Best) ---
+  Node sequence : P15056 → P08238 → P07900 → P40763 → P08069
+  Edge weights  : [0.7500, 0.7500, 0.7500, 0.7500]
+  Path Score    : 0.316406
+
