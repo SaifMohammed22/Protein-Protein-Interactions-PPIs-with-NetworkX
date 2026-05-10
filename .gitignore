@@ -220,8 +220,8 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Ignore results
-results/*
-!results/.gitkeep
+results/4_adjacency_matrix.csv
+# !results/.gitkeep
 
 # Ignore the results of tests
 __test_tmp__/

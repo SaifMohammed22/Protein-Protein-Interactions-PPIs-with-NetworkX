@@ -1,0 +1,25 @@
+============================================================
+PROTEIN NEIGHBORS ANALYSIS
+Query Protein: P15056
+Total Degree: 9
+  - In-Degree (incoming interactions): 6
+  - Out-Degree (outgoing interactions): 3
+============================================================
+
+--- INCOMING INTERACTIONS (Predecessors) ---
+Protein ID		Interaction Weight
+----------------------------------------
+O14807		0.75
+P10398		0.75
+P24723		0.62552
+P54274		0.75
+Q13114		0.413885
+Q13153		0.674374
+
+--- OUTGOING INTERACTIONS (Successors) ---
+Protein ID		Interaction Weight
+----------------------------------------
+P08238		0.75
+P19634		0.674374
+Q15349		0.75
+
