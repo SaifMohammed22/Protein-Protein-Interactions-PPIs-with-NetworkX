@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 # Add src to path so we can import connectivity_analysis
-sys.path.insert(0, str(Path(__file__).parent / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from connectivity_analysis import (
     calculate_single_protein_degrees,
@@ -52,7 +52,7 @@ def test_individual_functions():
     
     # Create fake graph
     G = create_fake_graph()
-    print(f"\n✓ Created fake 5-node graph")
+    print(f"\n[OK] Created fake 5-node graph")
     print(f"  - Nodes: {list(G.nodes())}")
     print(f"  - Edges: {list(G.edges())}")
     
@@ -61,7 +61,7 @@ def test_individual_functions():
     degrees = calculate_single_protein_degrees(G)
     print(f"Degrees calculated: {degrees}")
     assert len(degrees) == 5, "Should have 5 proteins"
-    print("✓ PASSED")
+    print("[OK] PASSED")
     
     # Test protein ranking
     print("\n--- Test: rank_multiprotein_by_degree() ---")
@@ -69,7 +69,7 @@ def test_individual_functions():
     print(f"Ranked proteins (top 3): {ranked[:3]}")
     assert len(ranked) == 5, "Should have 5 proteins"
     assert ranked[0][1] >= ranked[-1][1], "Should be sorted descending"
-    print("✓ PASSED")
+    print("[OK] PASSED")
     
     # Test statistics
     print("\n--- Test: get_degree_statistics() ---")
@@ -79,7 +79,7 @@ def test_individual_functions():
     print(f"Max degree: {stats['max_degree']}")
     assert stats['num_nodes'] == 5, "Should have 5 nodes"
     assert stats['num_edges'] == 6, "Should have 6 edges"
-    print("✓ PASSED")
+    print("[OK] PASSED")
     
     print_degree_statistics(G)
 
@@ -91,7 +91,7 @@ def test_output_files():
     print("="*60)
     
     # Create results directory
-    results_dir = Path(__file__).parent / "results"
+    results_dir = Path(__file__).parent / "__test_tmp__"
     results_dir.mkdir(exist_ok=True)
     
     # Create fake graph
@@ -105,7 +105,7 @@ def test_output_files():
     with open(degree_file) as f:
         content = f.read()
         assert "Protein" in content and "Degree" in content
-    print(f"✓ Created: {degree_file.name}")
+    print(f"[OK] Created: {degree_file.name}")
     print(f"  File size: {degree_file.stat().st_size} bytes")
     
     print("\n--- Test: save_ranked_proteins() ---")
@@ -115,14 +115,14 @@ def test_output_files():
     with open(ranked_file) as f:
         content = f.read()
         assert "Rank" in content and "Degree" in content
-    print(f"✓ Created: {ranked_file.name}")
+    print(f"[OK] Created: {ranked_file.name}")
     print(f"  File size: {ranked_file.stat().st_size} bytes")
     
     print("\n--- Test: plot_degree_distribution() ---")
     histogram_file = results_dir / "3_multiprotein_histogram.png"
     plot_degree_distribution(G, str(histogram_file))
     assert histogram_file.exists(), f"File {histogram_file} should exist"
-    print(f"✓ Created: {histogram_file.name}")
+    print(f"[OK] Created: {histogram_file.name}")
     print(f"  File size: {histogram_file.stat().st_size} bytes")
 
 
@@ -154,9 +154,9 @@ def test_full_pipeline():
         filepath = results_dir / filename
         assert filepath.exists(), f"Expected file {filename} not created!"
         size = filepath.stat().st_size
-        print(f"  ✓ {filename} ({size} bytes)")
+        print(f"  [OK] {filename} ({size} bytes)")
     
-    print("\n✓ PASSED - All output files created successfully!")
+    print("\n[OK] PASSED - All output files created successfully!")
 
 
 def main():
@@ -171,16 +171,16 @@ def main():
         test_full_pipeline()
         
         print("\n" + "="*60)
-        print("✓✓✓ ALL TESTS PASSED! ✓✓✓")
+        print("[OK][OK][OK] ALL TESTS PASSED! [OK][OK][OK]")
         print("="*60)
         print("\nYour connectivity_analysis.py is working correctly!")
         print("Output files are in the 'results/' directory")
         
     except AssertionError as e:
-        print(f"\n✗ TEST FAILED: {e}")
+        print(f"\n[FAIL] TEST FAILED: {e}")
         sys.exit(1)
     except Exception as e:
-        print(f"\n✗ ERROR: {e}")
+        print(f"\n[ERROR] ERROR: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
