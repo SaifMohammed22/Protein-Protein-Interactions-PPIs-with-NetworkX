@@ -58,7 +58,7 @@ def main():
         print(f"  Total degree: {neighbor_data['total_degree']}")
         print(f"  In-degree: {neighbor_data['in_degree']}")
         print(f"  Out-degree: {neighbor_data['out_degree']}")
-        print(f"✓ Neighbors saved to {neighbors_output}")
+        print(f"  Neighbors saved to {neighbors_output}")
     except Exception as e:
         print(f"[Warning] Neighbors analysis skipped -- {e}")
 

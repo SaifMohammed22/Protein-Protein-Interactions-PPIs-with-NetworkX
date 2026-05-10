@@ -133,15 +133,15 @@ def run_connectivity_analysis(graph: nx.Graph, results_dir: str = "results") -> 
     # Run all analyses
     print("Calculating single protein degrees...")
     save_single_protein_degrees(graph, degree_output)
-    print(f"✓ Saved to {degree_output}")
+    print(f" Saved to {degree_output}")
     
     print("Ranking proteins by connectivity...")
     save_ranked_proteins(graph, ranked_output)
-    print(f"✓ Saved to {ranked_output}")
+    print(f" Saved to {ranked_output}")
     
     print("Generating degree distribution histogram...")
     plot_degree_distribution(graph, histogram_output)
-    print(f"✓ Saved to {histogram_output}")
+    print(f" Saved to {histogram_output}")
     
     print("\nConnectivity analysis completed successfully!")
 
